@@ -283,7 +283,41 @@
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(168, 85, 247, 0.5);
     }
-  </style>
+
+    /* Responsive layout and modal repair */
+    html, body { width:100%; max-width:100%; overflow-x:hidden; }
+    body { background:#faf5ff !important; color:#1e293b !important; }
+    #root { width:100%; min-height:100vh; }
+    .vault-card { color:#1e293b !important; }
+    .vault-profile-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(220px,1fr); gap:16px; align-items:start; }
+    .vault-field { display:flex; flex-direction:column; gap:5px; min-width:0; font-size:11px; line-height:1.35; font-weight:700; color:#64748b; }
+    .vault-field input:not([type=file]) { box-sizing:border-box; width:100%; min-width:0; height:36px; border:1px solid #d8c5f7; border-radius:9px; padding:7px 9px; background:#fff; color:#1e293b; font-size:13px; font-weight:500; }
+    .vault-field input[type=file] { box-sizing:border-box; width:100%; min-width:0; font-size:11px; font-weight:500; color:#334155; }
+    .vault-settings { display:flex; flex-direction:column; gap:10px; min-width:0; border:1px solid #eadcff; background:#faf7ff; border-radius:12px; padding:12px; }
+    .vault-check, .vault-platform label { display:flex; align-items:center; gap:7px; font-size:12px; line-height:1.4; font-weight:600; color:#334155; }
+    .vault-platform { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:8px; border-top:1px solid #eadcff; }
+    .vault-platform strong { grid-column:1/-1; font-size:12px; color:#5b21b6; }
+    .vault-check input, .vault-platform input { flex:0 0 auto; width:16px; height:16px; }
+    .vault-card img { max-width:100%; }
+    /* Keep scrolling in the modal list only; prevent nested page scrollbars. */
+    body:has(.fixed.inset-0.z-50) { overflow:hidden; }
+    .fixed.inset-0.z-50 { overscroll-behavior:contain; }
+    .fixed.inset-0.z-50 > .purple-glass { min-height:0; max-height:calc(100dvh - 24px); overflow:hidden; }
+    .fixed.inset-0.z-50 .flex-1.overflow-y-auto { min-height:0; overscroll-behavior:contain; scrollbar-width:thin; }
+    @media (max-width:700px) {
+      .vault-profile-grid { grid-template-columns:minmax(0,1fr); }
+      .vault-profile-grid > div:first-child { flex-direction:column; }
+      .vault-profile-grid > div:first-child > img { width:52px; height:52px; }
+      .fixed.inset-0.z-50 { padding:10px !important; align-items:center; }
+      .fixed.inset-0.z-50 > .purple-glass { width:100%; max-width:100%; padding:14px !important; border-radius:22px !important; max-height:calc(100dvh - 20px); }
+      .vault-settings { padding:10px; }
+      .vault-platform { grid-template-columns:1fr 1fr; }
+      header { max-width:100%; }
+    }
+    @media (min-width:701px) {
+      .vault-card { padding:16px !important; }
+    }
+\n  </style>
 
   <!-- Firebase Modular Imports -->
   <script type="module">
@@ -342,7 +376,7 @@
   </script>
 </head>
 
-<body class="bg-lilac-50 text-slate-800 dark:bg-[#0c0618] dark:text-lilac-100 min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="bg-lilac-50 text-slate-800 min-h-screen flex flex-col relative overflow-x-hidden">
 
   <!-- Ambient Background Orbs -->
   <div class="glow-orb w-96 h-96 bg-lilac-300/40 dark:bg-lilac-900/30 top-0 left-[-100px]"></div>
@@ -825,12 +859,18 @@
 
         setExporting(true);
         try {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch(e) {} }
+          await Promise.all(Array.from(targetElement.querySelectorAll('img')).map(img => {
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+            return new Promise(resolve => { img.addEventListener('load', resolve, {once:true}); img.addEventListener('error', resolve, {once:true}); setTimeout(resolve, 5000); });
+          }));
+          await new Promise(resolve => setTimeout(resolve, 250));
           const canvas = await html2canvas(targetElement, {
             scale: exportResolution,
             useCORS: true,
-            allowTaint: true,
-            backgroundColor: null,
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            foreignObjectRendering: false,
             logging: false,
             imageTimeout: 5000,
             removeContainer: true
@@ -869,15 +909,6 @@
             )}
 
             <div className="glow-orb w-96 h-96 bg-purple-400/40 dark:bg-purple-800/30 top-[-50px] left-[-50px] animate-cute-float"></div>
-
-            <div className="absolute top-6 right-6 z-20">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="px-4 py-2 rounded-2xl bg-white/70 dark:bg-purple-900/60 backdrop-blur-md border border-purple-300 dark:border-purple-700 text-purple-900 dark:text-lilac-100 font-semibold text-xs flex items-center gap-2 shadow-md hover:scale-105 transition"
-              >
-                {darkMode ? <span>Lilac Light</span> : <span>Violet Dark</span>}
-              </button>
-            </div>
 
             <div className="relative z-10 max-w-lg w-full bg-white/80 dark:bg-purple-950/60 backdrop-blur-2xl border-2 border-lilac-300/80 dark:border-purple-700/50 rounded-[36px] p-8 sm:p-10 shadow-[0_20px_50px_rgba(168,85,247,0.25)] space-y-6">
               <div className="w-full max-w-[390px] mx-auto animate-cute-float">
@@ -921,12 +952,6 @@
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-lilac-200 flex items-center justify-center hover:bg-purple-200 dark:hover:bg-purple-800 transition shadow-sm"
-              >
-                {darkMode ? <i className="fa-solid fa-sun text-amber-300"></i> : <i className="fa-solid fa-moon text-indigo-600"></i>}
-              </button>
               <button 
                 onClick={handleOpenExportModal}
                 className="bg-gradient-to-r from-lilac-600 to-purple-700 hover:from-lilac-500 hover:to-purple-600 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-md flex items-center gap-2"
@@ -3705,85 +3730,61 @@
 
                 <div className="flex-1 overflow-y-auto space-y-3 pr-1">
                   {characters.map((char, idx) => (
-                    <div key={char.id} className="bg-white/80 dark:bg-purple-900/60 p-3 rounded-2xl border border-purple-200 dark:border-purple-800 space-y-2">
-                      <div className="flex items-center gap-3">
-                        <img src={char.avatar} className="w-12 h-12 rounded-full object-cover border-2 border-purple-300 shadow flex-shrink-0" />
-                        <div className="flex-1 grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-[9px] font-bold text-slate-500 block">Contact Name</label>
-                            <input 
-                              type="text" 
-                              value={char.contactName}
-                              onChange={e => {
-                                const up = [...characters];
-                                up[idx].contactName = e.target.value;
-                                setCharacters(up);
-                              }}
-                              className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs font-bold"
-                            />
+                    <div key={char.id} className="vault-card bg-white/90 p-3 sm:p-4 rounded-2xl border border-purple-200 space-y-3">
+                      <div className="vault-profile-grid">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <img src={char.avatar} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-purple-300 shadow flex-shrink-0" />
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0 w-full">
+                            <label className="vault-field">Contact Name
+                              <input type="text" value={char.contactName || ''} onChange={e => { const up=[...characters]; up[idx].contactName=e.target.value; setCharacters(up); }} />
+                            </label>
+                            <label className="vault-field">Instagram Username (@)
+                              <input type="text" value={char.igUsername || ''} onChange={e => { const up=[...characters]; up[idx].igUsername=e.target.value; if(up[idx].sameUsername) up[idx].twUsername=e.target.value; setCharacters(up); }} />
+                            </label>
+                            <label className="vault-field">Instagram Display Name
+                              <input type="text" value={char.igDisplayName || ''} onChange={e => { const up=[...characters]; up[idx].igDisplayName=e.target.value; if(up[idx].sameUsername) up[idx].twDisplayName=e.target.value; setCharacters(up); }} />
+                            </label>
+                            <label className="vault-field">Twitter Username (@)
+                              <input type="text" value={char.twUsername || ''} onChange={e => { const up=[...characters]; up[idx].twUsername=e.target.value; setCharacters(up); }} />
+                            </label>
+                            <label className="vault-field">Twitter Display Name
+                              <input type="text" value={char.twDisplayName || ''} onChange={e => { const up=[...characters]; up[idx].twDisplayName=e.target.value; setCharacters(up); }} />
+                            </label>
+                            <label className="vault-field">Facebook Username
+                              <input type="text" value={char.fbUsername || ''} onChange={e => { const up=[...characters]; up[idx].fbUsername=e.target.value; setCharacters(up); }} />
+                            </label>
+                            <label className="vault-field">Facebook Display Name
+                              <input type="text" value={char.fbDisplayName || char.fbName || ''} onChange={e => { const up=[...characters]; up[idx].fbDisplayName=e.target.value; up[idx].fbName=e.target.value; setCharacters(up); }} />
+                            </label>
                           </div>
-                          <div>
-                            <label className="text-[9px] font-bold text-slate-500 block">IG Username (@)</label>
-                            <input 
-                              type="text" 
-                              value={char.igUsername || ''}
-                              onChange={e => {
-                                const up = [...characters];
-                                up[idx].igUsername = e.target.value;
-                                setCharacters(up);
-                              }}
-                              className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs font-medium"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-[9px] font-bold text-slate-500 block">Twitter Username (@)</label>
-                            <input 
-                              type="text" 
-                              value={char.twUsername || ''}
-                              onChange={e => {
-                                const up = [...characters];
-                                up[idx].twUsername = e.target.value;
-                                setCharacters(up);
-                              }}
-                              className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs font-bold"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-[9px] font-bold text-slate-500 block">Twitter Display Name</label>
-                            <input 
-                              type="text" 
-                              value={char.twDisplayName || ''}
-                              onChange={e => {
-                                const up = [...characters];
-                                up[idx].twDisplayName = e.target.value;
-                                setCharacters(up);
-                              }}
-                              className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs font-bold"
-                            />
-                          </div>
-                          <div><label className="text-[9px] font-bold text-slate-500 block">Instagram Display Name</label><input type="text" value={char.igDisplayName || ''} onChange={e=>{const up=[...characters];up[idx].igDisplayName=e.target.value;setCharacters(up);}} className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs"/></div>
-                          <div><label className="text-[9px] font-bold text-slate-500 block">Facebook Username</label><input type="text" value={char.fbUsername || ''} onChange={e=>{const up=[...characters];up[idx].fbUsername=e.target.value;setCharacters(up);}} className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs"/></div>
-                          <div><label className="text-[9px] font-bold text-slate-500 block">Facebook Display Name</label><input type="text" value={char.fbDisplayName || char.fbName || ''} onChange={e=>{const up=[...characters];up[idx].fbDisplayName=e.target.value;up[idx].fbName=e.target.value;setCharacters(up);}} className="w-full bg-white dark:bg-purple-950 border rounded-lg p-1 text-xs"/></div>
                         </div>
-                        <label className="flex items-center gap-1 text-[10px] font-semibold"><input type="checkbox" checked={!!char.sameUsername} onChange={e=>{const up=[...characters];up[idx].sameUsername=e.target.checked;if(e.target.checked){up[idx].twUsername=up[idx].igUsername;up[idx].twDisplayName=up[idx].igDisplayName;}setCharacters(up);}}/> Instagram and Twitter use the same username/name</label>
-                        <div className="grid grid-cols-2 gap-2 text-[10px]">
-                          <label className="flex items-center gap-1"><input type="checkbox" checked={!!char.igVerified} onChange={e=>{const up=[...characters];up[idx].igVerified=e.target.checked;setCharacters(up);}}/> Instagram Verified</label>
-                          <label className="flex items-center gap-1"><input type="checkbox" checked={!!char.igPrivate} onChange={e=>{const up=[...characters];up[idx].igPrivate=e.target.checked;setCharacters(up);}}/> Instagram Private</label>
-                          <label className="flex items-center gap-1"><input type="checkbox" checked={!!char.fbVerified} onChange={e=>{const up=[...characters];up[idx].fbVerified=e.target.checked;setCharacters(up);}}/> Facebook Verified</label>
-                          <label className="flex items-center gap-1"><input type="checkbox" checked={!!char.fbPrivate} onChange={e=>{const up=[...characters];up[idx].fbPrivate=e.target.checked;setCharacters(up);}}/> Facebook Private</label>
-                          <label className="flex items-center gap-1"><input type="checkbox" checked={!!char.twVerified} onChange={e=>{const up=[...characters];up[idx].twVerified=e.target.checked;setCharacters(up);}}/> Twitter Verified</label>
-                          <label className="flex items-center gap-1"><input type="checkbox" checked={!!char.twPrivate} onChange={e=>{const up=[...characters];up[idx].twPrivate=e.target.checked;setCharacters(up);}}/> Twitter Private</label>
+                        <div className="vault-settings">
+                          <label className="vault-check"><input type="checkbox" checked={!!char.sameUsername} onChange={e=>{const up=[...characters];up[idx].sameUsername=e.target.checked;if(e.target.checked){up[idx].twUsername=up[idx].igUsername;up[idx].twDisplayName=up[idx].igDisplayName;}setCharacters(up);}} /> Instagram and Twitter share username/name</label>
+                          <div className="vault-platform">
+                            <strong>Instagram</strong>
+                            <label><input type="checkbox" checked={!!char.igVerified} onChange={e=>{const up=[...characters];up[idx].igVerified=e.target.checked;setCharacters(up);}} /> Verified</label>
+                            <label><input type="checkbox" checked={!!char.igPrivate} onChange={e=>{const up=[...characters];up[idx].igPrivate=e.target.checked;setCharacters(up);}} /> Private</label>
+                          </div>
+                          <div className="vault-platform">
+                            <strong>Facebook</strong>
+                            <label><input type="checkbox" checked={!!char.fbVerified} onChange={e=>{const up=[...characters];up[idx].fbVerified=e.target.checked;setCharacters(up);}} /> Verified</label>
+                            <label><input type="checkbox" checked={!!char.fbPrivate} onChange={e=>{const up=[...characters];up[idx].fbPrivate=e.target.checked;setCharacters(up);}} /> Private</label>
+                          </div>
+                          <div className="vault-platform">
+                            <strong>Twitter</strong>
+                            <label><input type="checkbox" checked={!!char.twVerified} onChange={e=>{const up=[...characters];up[idx].twVerified=e.target.checked;setCharacters(up);}} /> Verified</label>
+                            <label><input type="checkbox" checked={!!char.twPrivate} onChange={e=>{const up=[...characters];up[idx].twPrivate=e.target.checked;setCharacters(up);}} /> Private</label>
+                          </div>
+                          <label className="vault-field">Profile Cover Photo
+                            <input type="file" accept="image/*" onChange={e=>handleImageUpload(e,url=>{const up=[...characters];up[idx].coverPhoto=url;setCharacters(up);})} />
+                          </label>
                         </div>
-                        <label className="block text-[9px]">Profile Cover Photo<input type="file" accept="image/*" className="block w-full text-[9px]" onChange={e=>handleImageUpload(e,url=>{const up=[...characters];up[idx].coverPhoto=url;setCharacters(up);})}/></label>
                       </div>
-
-                      <div className="flex items-center justify-between pt-1 border-t border-purple-100 dark:border-purple-800/60 text-[10px]">
-                        <button 
-                          onClick={() => applyCharacterToMockup(char)}
-                          className="bg-gradient-to-r from-lilac-600 to-purple-600 text-white font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm hover:opacity-90"
-                        >
-                          <i className="fa-solid fa-wand-magic-sparkles text-[9px]"></i> Apply to Active App
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-purple-100">
+                        <button onClick={() => applyCharacterToMockup(char)} className="bg-gradient-to-r from-lilac-600 to-purple-600 text-white font-bold px-3 py-2 rounded-lg flex items-center gap-2 shadow-sm hover:opacity-90 text-xs">
+                          <i className="fa-solid fa-wand-magic-sparkles"></i> Apply to Active App
                         </button>
+                        <button onClick={() => setCharacters(characters.filter(c=>c.id!==char.id))} className="text-rose-600 text-xs font-semibold px-2 py-2">Remove profile</button>
                       </div>
                     </div>
                   ))}
