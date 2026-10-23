@@ -317,7 +317,65 @@
     @media (min-width:701px) {
       .vault-card { padding:16px !important; }
     }
-\n  </style>
+\n  
+    /* iOSix Studio visual refresh: lavender palette for the website chrome only.
+       The phone/mockup canvas and its simulated operating systems are intentionally untouched. */
+    :root {
+      --studio-lavender-50:#f8f7ff;
+      --studio-lavender-100:#e6e6fa;
+      --studio-lavender-200:#cbc7f8;
+      --studio-lavender-300:#b0a8f6;
+      --studio-lavender-400:#9c8fe5;
+      --studio-lavender-500:#8170cc;
+      --studio-ink:#28213f;
+    }
+    body { background:var(--studio-lavender-50) !important; color:var(--studio-ink) !important; }
+    /* Keep the studio app shell soft and editorial, not a dark-mode site. */
+    #root { background:linear-gradient(180deg,#e6e6fa 0%,#f8f7ff 42%,#ffffff 100%); }
+    #root > div { min-width:0; }
+    #root button:not(.phone-frame button):not([class*="mockup"] button) { transition:background-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+    .purple-glass {
+      background:rgba(255,255,255,.97) !important;
+      color:#28213f !important;
+      border-color:#cbc7f8 !important;
+      box-shadow:0 18px 48px rgba(90,72,145,.14) !important;
+      backdrop-filter:blur(18px);
+    }
+    .vault-card { background:#fff !important; border-color:#cbc7f8 !important; border-radius:18px !important; }
+    .vault-settings { background:#f8f7ff !important; border-color:#e6e1ff !important; }
+    .vault-field { color:#615a7b !important; font-size:12px !important; }
+    .vault-field input:not([type=file]), .vault-field textarea, .vault-field select {
+      border-color:#d9d3fb !important; border-radius:10px !important; background:#fff !important;
+      color:#28213f !important; min-height:38px; padding:8px 10px !important;
+    }
+    .vault-platform strong { color:#6655ad !important; }
+    .vault-avatar-editor { width:84px; flex:0 0 84px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .vault-avatar-editor img { width:64px !important; height:64px !important; }
+    .vault-avatar-upload {
+      display:inline-flex; align-items:center; justify-content:center; text-align:center;
+      width:100%; padding:6px 5px; border:1px solid #cbc7f8; border-radius:9px;
+      background:#f1efff; color:#5f4ca4; font-size:10px; font-weight:700; cursor:pointer;
+    }
+    .vault-avatar-upload input { display:none; }
+    /* Lavender buttons in the studio UI; the mockup itself retains its own vintage colors. */
+    #root button.bg-purple-600, #root button.bg-purple-700,
+    #root button[class*="from-lilac-600"] {
+      background:#8170cc !important; border-color:#8170cc !important; color:#fff !important;
+    }
+    #root button.bg-purple-600:hover, #root button.bg-purple-700:hover { background:#6e5db7 !important; }
+    @media (max-width:700px) {
+      .vault-profile-grid { grid-template-columns:minmax(0,1fr) !important; }
+      .vault-profile-grid > div:first-child { display:flex; flex-direction:column; align-items:stretch; }
+      .vault-profile-grid > div:first-child > div:last-child { width:100%; }
+      .vault-profile-grid .vault-avatar-editor { flex-direction:row; width:100%; flex-basis:auto; justify-content:flex-start; margin-bottom:4px; }
+      .vault-avatar-upload { width:auto; min-width:100px; }
+      .vault-settings { width:100%; }
+    }
+    @media (min-width:701px) {
+      .vault-profile-grid { grid-template-columns:minmax(0,1.35fr) minmax(230px,.9fr) !important; }
+    }
+
+</style>
 
   <!-- Firebase Modular Imports -->
   <script type="module">
@@ -3733,7 +3791,12 @@
                     <div key={char.id} className="vault-card bg-white/90 p-3 sm:p-4 rounded-2xl border border-purple-200 space-y-3">
                       <div className="vault-profile-grid">
                         <div className="flex items-start gap-3 min-w-0">
-                          <img src={char.avatar} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-purple-300 shadow flex-shrink-0" />
+                          <div className="vault-avatar-editor">
+                          <img src={char.avatar} alt="Profile photo" className="w-12 h-12 rounded-full object-cover border-2 border-purple-300 shadow flex-shrink-0" />
+                          <label className="vault-avatar-upload">Change photo
+                            <input type="file" accept="image/*" aria-label="Upload profile photo" onChange={e=>handleImageUpload(e,url=>{const up=[...characters];up[idx].avatar=url;setCharacters(up);})} />
+                          </label>
+                        </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0 w-full">
                             <label className="vault-field">Contact Name
                               <input type="text" value={char.contactName || ''} onChange={e => { const up=[...characters]; up[idx].contactName=e.target.value; setCharacters(up); }} />
