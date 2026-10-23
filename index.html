@@ -375,6 +375,136 @@
       .vault-profile-grid { grid-template-columns:minmax(0,1.35fr) minmax(230px,.9fr) !important; }
     }
 
+
+    /* Warm retro editorial website theme inspired by the supplied references.
+       Scoped to the outer Studio UI; the simulated phone screens are not restyled. */
+    :root {
+      --studio-coral:#f6a18d;
+      --studio-butter:#d8ca78;
+      --studio-cream:#fff7ef;
+      --studio-pink:#f3c3cc;
+      --studio-sky:#c5d9ed;
+      --studio-mint:#c7e7dc;
+      --studio-burgundy:#54231d;
+      --studio-ink:#39251f;
+    }
+    html, body { background:var(--studio-coral) !important; color:var(--studio-ink) !important; }
+    #root {
+      background:var(--studio-coral) !important;
+      color:var(--studio-ink);
+      min-height:100vh;
+      padding:clamp(10px,2.5vw,28px);
+      box-sizing:border-box;
+    }
+    #root > div {
+      max-width:1480px;
+      margin:0 auto;
+      background:var(--studio-cream);
+      border:1px solid rgba(84,35,29,.32);
+      box-shadow:0 8px 28px rgba(84,35,29,.10);
+      min-height:calc(100vh - 56px);
+      overflow:visible;
+    }
+    /* Main site panels, settings, and modals only. Mockup internals remain untouched. */
+    .purple-glass {
+      background:var(--studio-cream) !important;
+      color:var(--studio-ink) !important;
+      border:1px solid rgba(84,35,29,.45) !important;
+      border-radius:3px !important;
+      box-shadow:0 8px 24px rgba(84,35,29,.12) !important;
+      backdrop-filter:none !important;
+    }
+    .vault-card {
+      background:#fffdf9 !important;
+      border:1px solid #e8c4bd !important;
+      border-radius:14px !important;
+      box-shadow:0 4px 14px rgba(84,35,29,.06);
+    }
+    .vault-settings {
+      background:#fff1e8 !important;
+      border-color:#e9c9be !important;
+    }
+    .vault-field { color:#795d55 !important; }
+    .vault-field input:not([type=file]), .vault-field textarea, .vault-field select {
+      background:#fffdf9 !important;
+      border-color:#d9b5aa !important;
+      border-radius:5px !important;
+      color:#39251f !important;
+    }
+    .vault-platform { border-color:#efd8d0 !important; }
+    .vault-platform strong { color:var(--studio-burgundy) !important; }
+    .vault-avatar-upload {
+      background:#f9e1e2 !important;
+      color:var(--studio-burgundy) !important;
+      border-color:#e8b7b7 !important;
+      border-radius:5px !important;
+    }
+    /* Recolor site chrome buttons, excluding any controls inside the phone mockups. */
+    #root > div > header, #root > div > nav {
+      background:var(--studio-sky) !important;
+      color:var(--studio-ink) !important;
+      border-color:rgba(84,35,29,.2) !important;
+    }
+    #root button.bg-purple-600, #root button.bg-purple-700,
+    #root button[class*="from-lilac-600"] {
+      background:var(--studio-burgundy) !important;
+      border-color:var(--studio-burgundy) !important;
+      color:#fffaf4 !important;
+      border-radius:5px !important;
+      box-shadow:0 2px 0 rgba(84,35,29,.15) !important;
+    }
+    #root button.bg-purple-600:hover, #root button.bg-purple-700:hover {
+      background:#71372d !important;
+    }
+    #root input:not(.phone-frame input), #root textarea:not(.phone-frame textarea), #root select:not(.phone-frame select) {
+      accent-color:var(--studio-burgundy);
+    }
+    /* Responsive editorial frame */
+    @media(max-width:700px) {
+      #root { padding:0; }
+      #root > div { min-height:100vh; border-left:0; border-right:0; box-shadow:none; }
+      .purple-glass { border-radius:0 !important; }
+    }
+
+/* iOSix Studio outer-site palette: the requested lavender / violet palette.
+   Scoped to the website shell; vintage iOS mockup screens retain their own styling. */
+:root {
+  --site-lavender: #E6E6FA;
+  --site-periwinkle: #CBC7F8;
+  --site-lilac: #B0A8F6;
+  --site-tropical-indigo: #9C8FE5;
+  --site-slate-blue: #8170CC;
+  --site-deep-violet: #4B267A;
+}
+body {
+  background: var(--site-lavender) !important;
+  color: #30234a;
+}
+body > .glow-orb { display: none !important; }
+#root { background: var(--site-lavender) !important; }
+/* Main website panels and controls */
+#root .bg-lilac-50,
+#root .bg-white {
+  background-color: #F8F6FF !important;
+}
+#root [class*="border-lilac-"] {
+  border-color: var(--site-periwinkle) !important;
+}
+#root .text-purple-700,
+#root .text-purple-800,
+#root .text-purple-600 {
+  color: var(--site-deep-violet) !important;
+}
+#root .bg-purple-600,
+#root .bg-purple-700,
+#root .bg-purple-500 {
+  background-color: var(--site-tropical-indigo) !important;
+}
+#root .bg-purple-100,
+#root .bg-purple-50 {
+  background-color: var(--site-periwinkle) !important;
+}
+/* Do not recolor mockup screens, including their optional dark modes. */
 </style>
 
   <!-- Firebase Modular Imports -->
