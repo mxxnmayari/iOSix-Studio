@@ -365,6 +365,10 @@
     }
     .notes-list-item { border-bottom: 1px solid #e4c278; }
     .notes-list-item-dark { border-bottom: 1px solid #444; }
+    .notes-row { min-height: 42px; height: auto; box-sizing: border-box; line-height: normal; padding-top: 7px; padding-bottom: 7px; border-bottom-width: 1px; border-bottom-style: solid; }
+    .notes-paper-bg .notes-row { border-bottom-color: #e4c278; }
+    .notes-paper-bg-dark .notes-row { border-bottom-color: #444; }
+
 
     /* INSTAGRAM 2012 CSS */
     .ig-nav-bar-2012 {
@@ -962,7 +966,7 @@
           <div className="top-strip">Made for fictional stories, alternate universes & visual storytelling</div>
           <header>
             <div className="header-inner" style={{justifyContent:'center',position:'relative'}}>
-              <a href="#" className="brand" onClick={(e) => { e.preventDefault(); scrollToWorkspace(); }}><img src={BRAND_LOGO_HEADER} style={{ width: 'min(360px, 76vw)', height: 'auto', display: 'block' }} alt="iOSix Studio custom logo" /></a>
+              <a href="#" className="brand" onClick={(e) => { e.preventDefault(); scrollToWorkspace(); }}><img src={BRAND_LOGO_HEADER} style={{ width: 'min(250px, 58vw)', maxHeight: '68px', height: 'auto', objectFit: 'contain', display: 'block' }} alt="iOSix Studio custom logo" /></a>
             </div>
           </header>
           <main>
@@ -1548,7 +1552,7 @@
 
                         {/* MESSAGES MOCKUP PREVIEW */}
                         {activeTab === 'imessage' && (
-                          <div className={`flex-1 flex flex-col relative ${phoneDarkMode ? 'bg-slate-900 text-white' : 'bg-ios-grid-light text-slate-900'}`}>
+                          <div className={`flex-1 flex flex-col relative ${phoneDarkMode ? 'bg-ios-grid-dark text-white' : 'bg-ios-grid-light text-slate-900'}`}>
                             {imessage.showContactHeader && (
                               <div className="h-11 px-3 flex items-center justify-between text-white ios6-nav-bar z-10 shadow">
                                 <button className="ios6-nav-button px-2.5 py-1 text-xs font-bold flex items-center gap-1"><i className="fa-solid fa-chevron-left text-[9px]"></i> Messages</button>
@@ -1630,7 +1634,7 @@
                               {notes.subTab === 'list' ? (
                                 <div>
                                   {notes.list.map(item => (
-                                    <div key={item.id} className={`px-4 flex items-center justify-between cursor-pointer group ${phoneDarkMode ? 'notes-list-item-dark hover:bg-white/5' : 'notes-list-item hover:bg-black/5'}`} style={{ height: '42px', lineHeight: '42px' }}>
+                                    <div key={item.id} className={`notes-row px-4 flex items-center justify-between cursor-pointer group ${phoneDarkMode ? 'notes-list-item-dark hover:bg-white/5' : 'notes-list-item hover:bg-black/5'}`}>
                                       <div className="font-bold truncate pr-4 text-[17px]">{item.title}</div>
                                       <div className="flex items-center gap-2 flex-shrink-0">
                                         <span className={`text-[12px] font-sans font-medium ${phoneDarkMode ? 'text-slate-400' : 'text-[#6f6a5b]'}`}>{item.time}</span>
@@ -1909,7 +1913,7 @@
           {/* EXPORT MODAL */}
           {exportOpen && (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-              <div className="bg-[#fffdf9] border border-purple-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl text-slate-800">
+              <div className="bg-[#fffdf9] border border-purple-200 rounded-2xl max-w-3xl w-full max-h-[94vh] overflow-y-auto p-4 sm:p-6 space-y-4 shadow-2xl text-slate-800">
                 <div className="flex justify-between items-center border-b pb-3"><h2 className="font-serif text-xl font-bold text-purple-950">Export Mockup Photo</h2><button onClick={() => setExportOpen(false)} className="text-xl font-bold text-slate-400">×</button></div>
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 space-y-1"><strong className="font-bold flex items-center gap-1"><i className="fa-solid fa-triangle-exclamation"></i> Safari notice:</strong><p>The exported image may occasionally appear black. If it does, try clicking <strong>Download PNG</strong> again until it looks as expected.</p></div>
                 <div className="space-y-3 text-xs">
@@ -1918,8 +1922,8 @@
                   <div className="flex justify-between items-center"><span className="font-semibold">Resolution Scale</span><div className="flex gap-1">{[1, 2, 3, 4].map(res => <button key={res} onClick={() => setExportResolution(res)} className={`px-2.5 py-1 rounded font-bold text-[10px] ${exportResolution === res ? 'bg-purple-700 text-white' : 'bg-slate-200 text-slate-800'}`}>{res}×</button>)}</div></div>
                   <button onClick={captureScreenshot} className="secondary-btn w-full py-1.5 text-[10px]">Refresh Render</button>
                 </div>
-                <div className="bg-black/10 rounded-xl p-2 text-center min-h-[160px] flex items-center justify-center border">{exporting ? ( <div className="space-y-2 text-purple-900"><i className="fa-solid fa-spinner fa-spin text-2xl"></i><p className="text-xs font-bold">Rendering PNG image...</p></div> ) : renderedExportUrl ? ( <img src={renderedExportUrl} className="max-h-48 mx-auto rounded shadow-lg object-contain" /> ) : ( <p className="text-slate-400 text-xs">Click Refresh Render to generate</p> )}</div>
-                <a href={renderedExportUrl || '#'} download={`iosix-${activeTab}-${Date.now()}.png`} className={`w-full py-2.5 rounded-xl font-bold text-xs text-center transition flex items-center justify-center gap-2 ${renderedExportUrl ? 'bg-emerald-600 text-white shadow-md hover:bg-emerald-700' : 'bg-slate-300 text-white pointer-events-none'}`}><i className="fa-solid fa-download"></i> Download PNG</a>
+                <div className="bg-black/10 rounded-xl p-3 text-center min-h-[320px] max-h-[62vh] overflow-auto flex items-center justify-center border">{exporting ? ( <div className="space-y-2 text-purple-900"><i className="fa-solid fa-spinner fa-spin text-2xl"></i><p className="text-xs font-bold">Rendering PNG image...</p></div> ) : renderedExportUrl ? ( <img src={renderedExportUrl} className="max-w-full max-h-[58vh] w-auto h-auto mx-auto rounded shadow-lg object-contain" /> ) : ( <p className="text-slate-400 text-xs">Click Refresh Render to generate</p> )}</div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">On iPhone, tap Download PNG, then use the iOS share/save options to save the image to Photos. A website cannot silently write directly into your Photos album.</p><a href={renderedExportUrl || '#'} download={`iosix-${activeTab}-${Date.now()}.png`} className={`w-full py-2.5 rounded-xl font-bold text-xs text-center transition flex items-center justify-center gap-2 ${renderedExportUrl ? 'bg-emerald-600 text-white shadow-md hover:bg-emerald-700' : 'bg-slate-300 text-white pointer-events-none'}`}><i className="fa-solid fa-download"></i> Download PNG</a>
               </div>
             </div>
           )}
