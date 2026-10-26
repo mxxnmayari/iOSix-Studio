@@ -110,7 +110,7 @@
     }
 
     header {
-      background: #fffdf8;
+      background: #ffffff;
       border-bottom: 1px solid var(--line);
       position: relative;
       z-index: 5;
@@ -119,11 +119,11 @@
     .header-inner {
       max-width: 1280px;
       margin: auto;
-      padding: 14px 24px;
+      padding: 3px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 12px;
     }
 
     .brand {
@@ -281,8 +281,28 @@
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 14px;
       line-height: 1.4;
-      word-wrap: break-word;
-      max-width: 75%;
+      width: fit-content;
+      min-width: 0;
+      max-width: min(78%, 100%);
+      box-sizing: border-box;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+    .imessage-bubble-text {
+      display: block;
+      min-width: 0;
+      max-width: 100%;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+    .bubble-classic img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      box-sizing: border-box;
     }
     .bubble-me-blue {
       background: linear-gradient(to bottom, #4ea3f8 0%, #157df4 100%);
@@ -966,7 +986,7 @@
           <div className="top-strip">Made for fictional stories, alternate universes & visual storytelling</div>
           <header>
             <div className="header-inner" style={{justifyContent:'center',position:'relative'}}>
-              <a href="#" className="brand" onClick={(e) => { e.preventDefault(); scrollToWorkspace(); }}><img src={BRAND_LOGO_HEADER} style={{ width: 'min(250px, 58vw)', maxHeight: '68px', height: 'auto', objectFit: 'contain', display: 'block' }} alt="iOSix Studio custom logo" /></a>
+              <a href="#" className="brand" onClick={(e) => { e.preventDefault(); scrollToWorkspace(); }}><img src={BRAND_LOGO_HEADER} style={{ width: 'min(180px, 44vw)', maxHeight: '38px', height: 'auto', objectFit: 'contain', display: 'block' }} alt="iOSix Studio custom logo" /></a>
             </div>
           </header>
           <main>
@@ -1569,7 +1589,7 @@
                                   <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                                     <div className={`bubble-classic ${isMe ? (imessage.isSmsGreen ? 'bubble-me-green' : 'bubble-me-blue') : 'bubble-them'}`}>
                                       {m.image && <img src={m.image} className="w-full max-h-48 rounded-lg object-cover mb-1 border border-black/10 shadow-sm" />}
-                                      {m.text && <div className="break-words">{renderFormattedTextWithMentions(m.text)}</div>}
+                                      {m.text && <div className="imessage-bubble-text">{renderFormattedTextWithMentions(m.text)}</div>}
                                     </div>
                                     <span className="text-[9px] text-slate-400 mt-0.5 px-1 font-medium">{m.time}</span>
                                   </div>
